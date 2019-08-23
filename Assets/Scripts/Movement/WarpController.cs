@@ -57,16 +57,18 @@ public class WarpController : MonoBehaviour
         {
             if (destination.postDropMove.direction != DIRECTION_BUTTON.NONE)
             {
-                movementController.TriggerButtons(destination.postDropMove.direction, ACTION_BUTTON.NONE);
+                movementController.Move2(destination.postDropMove.direction);
+                // movementController.TriggerButtons(destination.postDropMove.direction, ACTION_BUTTON.NONE);
             }
 
             return;
         }
 
-        if (!movementController.Move(destination.postDropMove.direction, destination.postDropMove.steps))
+        movementController.Move2(destination.postDropMove.direction, destination.postDropMove.steps);
+        /*if (!movementController.Move(destination.postDropMove.direction, destination.postDropMove.steps))
         {
             Debug.LogWarning("!!! WARPER CANNOT BE MOVED");
-        }
+        }*/
     }
 
     private bool IsWarpZone(Collider2D other)

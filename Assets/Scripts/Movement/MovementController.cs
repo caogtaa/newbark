@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class MovementController : MonoBehaviour
+public class MovementController : InputConsumer
 {
     private CellMovement movement;
 
@@ -20,6 +20,8 @@ public class MovementController : MonoBehaviour
     public bool mIsMoving = false;
     private int changeDirCoolDown = 0;
 
+    private GameObject player;
+
     void Start()
     {
         if (!animator)
@@ -30,21 +32,28 @@ public class MovementController : MonoBehaviour
         currentTilesToMove = tilesToMove;
 
         movement = new CellMovement(inputDelay, clampAt);
+
+        InputConsumerCenter.Instance.Register(this, 100);
     }
 
-    void FixedUpdate()
-    {
-        DIRECTION_BUTTON dir = InputController.GetPressedDirectionButton();
-        ACTION_BUTTON action = InputController.GetPressedActionButton();
-
-        if (CanMoveManually()) {
-            Move2(dir);
-        } else {
+    void FixedUpdate() {
+        if (InputConsumerCenter.Instance.GetCurrentConsumer() != this) {
             // need auto move in some case
             Move2();
+            return;
         }
 
-        Interact(lastMoveDir, action);
+        // handle other logic in OnFixedUpdateHandleInput
+    }
+
+    public override void OnFixedUpdateHandleInput() {
+        DIRECTION_BUTTON dir = InputController.GetPressedDirectionButton();
+        ACTION_BUTTON action = InputController.GetPressedActionButton();
+        Move2(dir);
+
+        if (action != ACTION_BUTTON.NONE) {
+            TryInteract(lastMoveDir, action);
+        }
     }
 
     public DIRECTION_BUTTON GetFaceDirection()
@@ -89,65 +98,20 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    public Vector3 GetMovementVector(DIRECTION_BUTTON dir)
+    public Vector3 GetMovementVector(DIRECTION_BUTTON dir, int tiles = 1)
     {
         switch (dir)
         {
             case DIRECTION_BUTTON.UP:
-                return Vector3.up;
+                return Vector3.up * tiles;
             case DIRECTION_BUTTON.DOWN:
-                return Vector3.down;
+                return Vector3.down * tiles;
             case DIRECTION_BUTTON.LEFT:
-                return Vector3.left;
+                return Vector3.left * tiles;
             case DIRECTION_BUTTON.RIGHT:
-                return Vector3.right;
+                return Vector3.right * tiles;
             default:
                 return Vector3.zero;
-        }
-    }
-
-    public bool CanMove()
-    {
-        // TODO optimize with events
-        return !FindObjectOfType<DialogManager>().InDialog();
-    }
-
-    public bool CanMoveManually()
-    {
-        return !FindObjectOfType<DialogManager>().InDialog();
-    }
-
-    private void MovementUpdate(DIRECTION_BUTTON dir)
-    {
-        if (movement != null && !movement.IsMoving)
-        {
-            currentTilesToMove = tilesToMove;
-        }
-
-        Move(dir, currentTilesToMove);
-    }
-
-    private void RaycastUpdate(DIRECTION_BUTTON dir, ACTION_BUTTON action)
-    {
-        Vector3 dirVector = GetFaceDirectionVector();
-
-        if (dirVector == Vector3.zero)
-        {
-            return;
-        }
-
-        RaycastHit2D hit = CheckRaycast(dirVector);
-        // Debug.DrawRay(transform.position, dirVector, Color.green);
-        if (hit.collider)
-        {
-            // Debug.DrawRay(transform.position, dirVector, Color.red);
-            // Debug.DrawRay(transform.position, hit.point, Color.blue);
-
-            if (hit.collider.gameObject.HasComponent<Interactable>())
-            {
-                // Debug.Log("[raycast hit] @interactable " + hit.collider.gameObject.name);
-                hit.collider.gameObject.GetComponent<Interactable>().Interact(dir, action);
-            }
         }
     }
 
@@ -165,7 +129,7 @@ public class MovementController : MonoBehaviour
         return Physics2D.Raycast(startingPosition, direction, raycastDistance * 2);
     }
 
-    public bool MoveTo(DIRECTION_BUTTON dir, Vector3 destinationPosition)
+    /*public bool MoveTo(DIRECTION_BUTTON dir, Vector3 destinationPosition)
     {
         UpdateAnimation();
 
@@ -206,10 +170,10 @@ public class MovementController : MonoBehaviour
         );
 
         return MoveTo(dir, destinationPosition);
-    }
+    }*/
 
 
-    private void Move2(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE) {
+    public void Move2(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
         if (IsMoving2()) {
             // continue moving to destination, can not change direction in the middle
             float delta = Time.fixedDeltaTime * speed;
@@ -219,7 +183,7 @@ public class MovementController : MonoBehaviour
             } else if (Vector3.Distance(transform.position, destPosition) <= delta && dir == lastMoveDir) {
                 // destination is close enough, update destination
                 // in order to make it more smooth for long time key press
-                destPosition += GetMovementVector(dir);
+                destPosition += GetMovementVector(dir, tiles);
             }
 
             return;
@@ -230,7 +194,7 @@ public class MovementController : MonoBehaviour
                 return;
             changeDirCoolDown = 0;
 
-            var movementVector = GetMovementVector(dir);
+            var movementVector = GetMovementVector(dir, tiles);
             if (dir != lastMoveDir) {
                 // face to that dir first
                 lastMoveDir = dir;
@@ -245,7 +209,7 @@ public class MovementController : MonoBehaviour
         }
     }
 
-    private bool Interact(DIRECTION_BUTTON dir, ACTION_BUTTON action) {
+    private bool TryInteract(DIRECTION_BUTTON dir, ACTION_BUTTON action) {
         if (action == ACTION_BUTTON.NONE)
             return false;
 
@@ -261,7 +225,7 @@ public class MovementController : MonoBehaviour
 
             if (hit.collider.gameObject.HasComponent<Interactable>()) {
                 // Debug.Log("[raycast hit] @interactable " + hit.collider.gameObject.name);
-                hit.collider.gameObject.GetComponent<Interactable>().Interact(dir, action);
+                hit.collider.gameObject.GetComponent<Interactable>().Interact(action);
                 return true;
             }
         }
@@ -299,21 +263,6 @@ public class MovementController : MonoBehaviour
         animator.SetFloat("LastMoveX", movement.LastPositionDiff.x);
         animator.SetFloat("LastMoveY", movement.LastPositionDiff.y);
         animator.SetBool("Moving", movement.IsMoving);
-    }
-
-    public void TriggerButtons(DIRECTION_BUTTON dir, ACTION_BUTTON action)
-    {
-        if (!CanMove() && IsMoving())
-        {
-            StopMoving();
-        }
-
-        if (CanMove())
-        {
-            MovementUpdate(dir);
-        }
-
-        RaycastUpdate(dir, action);
     }
 
     void OnCollisionEnter2D(Collision2D col)

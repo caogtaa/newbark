@@ -31,7 +31,7 @@ public class WarpController : InputConsumer
     private void MoveToDropEnd(WarpZone destination)
     {
         if (destination.postDropMove.steps > 0)
-            movementController.Move2(destination.postDropMove.direction, destination.postDropMove.steps);
+            movementController.Move(destination.postDropMove.direction, destination.postDropMove.steps);
     }
 
     private bool IsWarpZone(Collider2D other)

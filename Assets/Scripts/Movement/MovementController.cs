@@ -35,7 +35,7 @@ public class MovementController : InputConsumer
     void FixedUpdate() {
         if (InputConsumerCenter.Instance.GetCurrentConsumer() != this) {
             // need auto move in some case
-            Move2();
+            Move();
             return;
         }
 
@@ -45,52 +45,10 @@ public class MovementController : InputConsumer
     public override void OnFixedUpdateHandleInput() {
         DIRECTION_BUTTON dir = InputController.GetPressedDirectionButton();
         ACTION_BUTTON action = InputController.GetPressedActionButton();
-        Move2(dir);
+        Move(dir);
 
         if (action != ACTION_BUTTON.NONE) {
             TryInteract(lastMoveDir, action);
-        }
-    }
-
-    public DIRECTION_BUTTON GetFaceDirection()
-    {
-        if (animator.GetFloat("LastMoveX") > 0)
-        {
-            return DIRECTION_BUTTON.RIGHT;
-        }
-
-        if (animator.GetFloat("LastMoveX") < 0)
-        {
-            return DIRECTION_BUTTON.LEFT;
-        }
-
-        if (animator.GetFloat("LastMoveY") > 0)
-        {
-            return DIRECTION_BUTTON.UP;
-        }
-
-        if (animator.GetFloat("LastMoveY") < 0)
-        {
-            return DIRECTION_BUTTON.DOWN;
-        }
-
-        return DIRECTION_BUTTON.DOWN;
-    }
-
-    public Vector2 GetFaceDirectionVector()
-    {
-        switch (GetFaceDirection())
-        {
-            case DIRECTION_BUTTON.UP:
-                return Vector2.up;
-            case DIRECTION_BUTTON.DOWN:
-                return Vector2.down;
-            case DIRECTION_BUTTON.LEFT:
-                return Vector2.left;
-            case DIRECTION_BUTTON.RIGHT:
-                return Vector2.right;
-            default:
-                return Vector2.zero;
         }
     }
 
@@ -118,20 +76,13 @@ public class MovementController : InputConsumer
         return Physics2D.Raycast(startingPosition, direction, raycastDistance);
     }
 
-    private RaycastHit2D CheckFutureRaycast(Vector2 direction)
-    {
-        Vector2 startingPosition = (Vector2) transform.position;
-
-        return Physics2D.Raycast(startingPosition, direction, raycastDistance * 2);
-    }
-
-    public void Move2(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
-        if (IsMoving2()) {
+    public void Move(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
+        if (IsMoving()) {
             // continue moving to destination, can not change direction in the middle
             float delta = Time.fixedDeltaTime * speed;
             transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
             if (transform.position == destPosition) {
-                StopMoving2();
+                StopMoving();
             } else if (Vector3.Distance(transform.position, destPosition) <= delta && dir == lastMoveDir) {
                 // destination is close enough, update destination
                 // in order to make it more smooth for long time key press
@@ -215,21 +166,19 @@ public class MovementController : InputConsumer
         animator.SetBool("Moving", false);
     }
 
-    private void StopMoving2() {
+    private void StopMoving() {
         mIsMoving = false;
         animator.SetBool("Moving", mIsMoving);
     }
 
     void OnCollisionEnter2D(Collision2D col)
     {
-
         // Debug.Log("Collision ENTER between " + this.name + " and " + col.gameObject.name);
 
         lastCollidedObject = col.gameObject;
-        // lastCollisionDir = movement.LastDirection;
         lastCollisionDir = lastMoveDir;
 
-        StopMoving2();
+        StopMoving();
         ClampCurrentPosition();
 
         PlayCollisionSound(lastCollidedObject);
@@ -237,17 +186,6 @@ public class MovementController : InputConsumer
 
     void OnCollisionStay2D(Collision2D col)
     {
-        // Debug.Log("Collision STAY between " + this.name + " and " + col.gameObject.name);
-
-//         lastCollidedObject = col.gameObject;
-//         lastCollisionDir = movement.LastDirection;
-// 
-//         if (movement.IsMoving)
-//         {
-//             PlayCollisionSound(lastCollidedObject);
-//         }
-// 
-//         StopMoving();
     }
 
     bool HasCollisionSound(GameObject gobj)
@@ -281,7 +219,7 @@ public class MovementController : InputConsumer
         ClampPositionTo(transform.position);
     }
 
-    public bool IsMoving2() {
+    public bool IsMoving() {
         return mIsMoving;
     }
 

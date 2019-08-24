@@ -4,7 +4,7 @@ public class MovementController : InputConsumer
 {
     [Header("Movement")] public Animator animator;
     public int speed = 6;
-    public int inputDelay = 4;
+    public int inputDelay = 2;
     public int tilesToMove = 1;
     public float clampAt = 0.5f;
     public float raycastDistance = 1f;
@@ -82,7 +82,15 @@ public class MovementController : InputConsumer
             float delta = Time.fixedDeltaTime * speed;
             transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
             if (transform.position == destPosition) {
-                StopMoving();
+                if (dir != DIRECTION_BUTTON.NONE) {
+                    // another direction is pressed, turn soon
+                    lastMoveDir = dir;
+                    var movementVector = GetMovementVector(dir, tiles);
+                    destPosition = transform.position + movementVector;
+                    StartMovingAnimation(movementVector);
+                } else {
+                    StopMoving();
+                }
             } else if (Vector3.Distance(transform.position, destPosition) <= delta && dir == lastMoveDir) {
                 // destination is close enough, update destination
                 // in order to make it more smooth for long time key press
@@ -143,6 +151,8 @@ public class MovementController : InputConsumer
         animator.SetFloat("LastMoveX", movement.x);
         animator.SetFloat("LastMoveY", movement.y);
         animator.SetBool("Moving", mIsMoving);
+
+        // Debug.Log("current movement: " + movement.x + "," + movement.y);
     }
 
     public void FaceToDir(DIRECTION_BUTTON dir) {

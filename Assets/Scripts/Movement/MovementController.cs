@@ -2,8 +2,6 @@
 
 public class MovementController : InputConsumer
 {
-    private CellMovement movement;
-
     [Header("Movement")] public Animator animator;
     public int speed = 6;
     public int inputDelay = 8;
@@ -30,8 +28,6 @@ public class MovementController : InputConsumer
         }
 
         currentTilesToMove = tilesToMove;
-
-        movement = new CellMovement(inputDelay, clampAt);
 
         InputConsumerCenter.Instance.Register(this, 100);
     }
@@ -129,50 +125,6 @@ public class MovementController : InputConsumer
         return Physics2D.Raycast(startingPosition, direction, raycastDistance * 2);
     }
 
-    /*public bool MoveTo(DIRECTION_BUTTON dir, Vector3 destinationPosition)
-    {
-        UpdateAnimation();
-
-        if (!movement.IsMoving || (destinationPosition == transform.position))
-        {
-            ClampCurrentPosition();
-            return false;
-        }
-
-        if (movement.IsMoving && (dir != DIRECTION_BUTTON.NONE) && (dir == lastCollisionDir))
-        {
-            ClampCurrentPosition();
-            if (!(lastCollidedObject is null))
-            {
-                PlayCollisionSound(lastCollidedObject);
-            }
-
-            return true;
-        }
-        else if (movement.IsMoving)
-        {
-            lastCollidedObject = null;
-            lastCollisionDir = DIRECTION_BUTTON.NONE;
-        }
-
-
-        transform.position = Vector3.MoveTowards(transform.position, destinationPosition, Time.deltaTime * speed);
-        transform.rotation = new Quaternion(0, 0, 0, 0);
-        return true;
-    }
-
-    public bool Move(DIRECTION_BUTTON dir, int tiles)
-    {
-        currentTilesToMove = tiles;
-
-        Vector3 destinationPosition = movement.CalculateDestinationPosition(
-            transform.position, dir, tiles
-        );
-
-        return MoveTo(dir, destinationPosition);
-    }*/
-
-
     public void Move2(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
         if (IsMoving2()) {
             // continue moving to destination, can not change direction in the middle
@@ -256,22 +208,14 @@ public class MovementController : InputConsumer
         animator.SetBool("Moving", mIsMoving);
     }
 
-    private void UpdateAnimation()
-    {
-        animator.SetFloat("MoveX", movement.PositionDiff.x);
-        animator.SetFloat("MoveY", movement.PositionDiff.y);
-        animator.SetFloat("LastMoveX", movement.LastPositionDiff.x);
-        animator.SetFloat("LastMoveY", movement.LastPositionDiff.y);
-        animator.SetBool("Moving", movement.IsMoving);
-    }
-
     void OnCollisionEnter2D(Collision2D col)
     {
 
         // Debug.Log("Collision ENTER between " + this.name + " and " + col.gameObject.name);
 
         lastCollidedObject = col.gameObject;
-        lastCollisionDir = movement.LastDirection;
+        // lastCollisionDir = movement.LastDirection;
+        lastCollisionDir = lastMoveDir;
 
         StopMoving2();
         ClampCurrentPosition();
@@ -325,27 +269,37 @@ public class MovementController : InputConsumer
         ClampPositionTo(transform.position);
     }
 
-    public void StopMoving()
-    {
-        movement.Stop();
-        UpdateAnimation();
-        ClampCurrentPosition();
-    }
-
     public bool IsMoving2() {
         return mIsMoving;
     }
 
-    public bool IsMoving()
-    {
-        return movement.IsMoving;
-    }
-
     public void ClampPositionTo(Vector3 position)
     {
-        transform.position = movement.ClampPosition(position);
+        transform.position = ClampPosition(position);
 
         // override in case collision physics caused object rotation
         transform.rotation = new Quaternion(0, 0, 0, 0);
+    }
+
+
+    public Vector3 ClampPosition(Vector3 position) {
+        Vector3 fixedPos = new Vector3(ClampPositionAxis(position.x), ClampPositionAxis(position.y), 0);
+        return fixedPos;
+
+    }
+
+    private float ClampPositionAxis(float val) {
+        float mod = val % 1f;
+
+        if (System.Math.Abs(mod - clampAt) < double.Epsilon) // more precise than: if (mod == fraction)
+        {
+            return val;
+        }
+
+        if (val < 0f) {
+            return (val - mod) - clampAt;
+        }
+
+        return (val - mod) + clampAt;
     }
 }

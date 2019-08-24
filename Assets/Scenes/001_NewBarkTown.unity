@@ -24194,7 +24194,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352196779}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 13.472437, y: 21.45898, z: 5.110018}
+  m_LocalPosition: {x: 5.3506346, y: 21.027296, z: 12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 490968613}
@@ -24375,12 +24375,17 @@ PrefabInstance:
     - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
         type: 3}
       propertyPath: dropZoneOffset.y
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
         type: 3}
       propertyPath: postDropMove.direction
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
+        type: 3}
+      propertyPath: postDropMove.steps
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81da04f0b0dc34148bcd24007f3b42e2, type: 3}
@@ -43824,12 +43829,17 @@ PrefabInstance:
     - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
         type: 3}
       propertyPath: dropZoneOffset.y
-      value: -1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
         type: 3}
       propertyPath: postDropMove.direction
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8442121494777395711, guid: 81da04f0b0dc34148bcd24007f3b42e2,
+        type: 3}
+      propertyPath: postDropMove.steps
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 81da04f0b0dc34148bcd24007f3b42e2, type: 3}
@@ -45601,10 +45611,10 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.1
-  far clip plane: 5000
+  far clip plane: 1000
   field of view: 40
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 4.5
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

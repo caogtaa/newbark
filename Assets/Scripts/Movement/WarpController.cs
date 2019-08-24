@@ -8,7 +8,7 @@ using DG.Tweening;
 /**
  * Warp Controller. Attach this controller to the object that moves an warps, usually the player.
  */
-public class WarpController : MonoBehaviour
+public class WarpController : InputConsumer
 {
     public MovementController movementController;
 
@@ -19,26 +19,19 @@ public class WarpController : MonoBehaviour
     {
         Vector2 coords = destination.dropZone.transform.position.AsVector2() + destination.dropZoneOffset;
         movementController.ClampPositionTo(new Vector3(coords.x, coords.y, 0));
+
+        if (destination.postDropMove.direction != DIRECTION_BUTTON.NONE)
+            movementController.FaceToDir(destination.postDropMove.direction);
+    }
+
+    public override void OnFixedUpdateHandleInput() {
+        // do nothing to eat input
     }
 
     private void MoveToDropEnd(WarpZone destination)
     {
-        if (destination.postDropMove.steps == 0)
-        {
-            if (destination.postDropMove.direction != DIRECTION_BUTTON.NONE)
-            {
-                movementController.Move2(destination.postDropMove.direction);
-                // movementController.TriggerButtons(destination.postDropMove.direction, ACTION_BUTTON.NONE);
-            }
-
-            return;
-        }
-
-        movementController.Move2(destination.postDropMove.direction, destination.postDropMove.steps);
-        /*if (!movementController.Move(destination.postDropMove.direction, destination.postDropMove.steps))
-        {
-            Debug.LogWarning("!!! WARPER CANNOT BE MOVED");
-        }*/
+        if (destination.postDropMove.steps > 0)
+            movementController.Move2(destination.postDropMove.direction, destination.postDropMove.steps);
     }
 
     private bool IsWarpZone(Collider2D other)
@@ -66,6 +59,7 @@ public class WarpController : MonoBehaviour
             return;
 
         _isWarping = true;
+        InputConsumerCenter.Instance.Register(this, 0);
 
         // start warping
         var image = fadeMask.GetComponent<Image>();
@@ -96,6 +90,7 @@ public class WarpController : MonoBehaviour
             MoveToDropEnd(GetWarpZone(other));
             image.enabled = false;
             strongThis._isWarping = false;
+            InputConsumerCenter.Instance.UnRegister(strongThis);
         });
     }
 

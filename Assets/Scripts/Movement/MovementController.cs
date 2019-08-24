@@ -150,7 +150,7 @@ public class MovementController : InputConsumer
             if (dir != lastMoveDir) {
                 // face to that dir first
                 lastMoveDir = dir;
-                FaceToDir(movementVector);
+                FaceTo(movementVector);
 
                 // skip 8 frames before player can move
                 changeDirCoolDown = inputDelay;
@@ -194,7 +194,19 @@ public class MovementController : InputConsumer
         animator.SetBool("Moving", mIsMoving);
     }
 
-    private void FaceToDir(Vector3 movement) {
+    public void FaceToDir(DIRECTION_BUTTON dir) {
+        if (dir == DIRECTION_BUTTON.NONE)
+            dir = DIRECTION_BUTTON.DOWN;
+
+        if (lastMoveDir == dir)
+            return;
+
+        var movementVector = GetMovementVector(dir);
+        lastMoveDir = dir;
+        FaceTo(movementVector);
+    }
+
+    private void FaceTo(Vector3 movement) {
         // mIsMoving = false;
         animator.SetFloat("MoveX", movement.x);
         animator.SetFloat("MoveY", movement.y);

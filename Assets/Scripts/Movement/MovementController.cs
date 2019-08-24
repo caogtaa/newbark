@@ -4,7 +4,7 @@ public class MovementController : InputConsumer
 {
     [Header("Movement")] public Animator animator;
     public int speed = 6;
-    public int inputDelay = 8;
+    public int inputDelay = 4;
     public int tilesToMove = 1;
     public float clampAt = 0.5f;
     public float raycastDistance = 1f;

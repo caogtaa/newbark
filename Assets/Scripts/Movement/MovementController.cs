@@ -87,22 +87,37 @@ public class MovementController : InputConsumer
         return Physics2D.Raycast(startingPosition, direction, raycastDistance);
     }
 
+    private void StartMove(DIRECTION_BUTTON dir, int tiles = 1) {
+        lastMoveDir = dir;
+        var movementVector = GetMovementVector(dir, tiles);
+        destPosition = transform.position + movementVector;
+        StartMovingAnimation(movementVector);
+    }
+
+    private bool CanMove(Vector3 startPos, DIRECTION_BUTTON dir) {
+
+        int mask = (1 << 0);   // only check default layer (all portals are in TransparentFX layer)
+        var dirVector = GetMovementVector(dir);
+        var hit = Physics2D.Raycast(startPos, dirVector, raycastDistance, mask);
+
+        return hit.collider == null;
+    }
+
     public void HandleMoveInput(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
         if (IsMoving()) {
             // continue moving to destination, can not change direction in the middle
             float delta = Time.deltaTime * speed;
             // transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
             if (transform.position == destPosition) {
-                if (dir != DIRECTION_BUTTON.NONE) {
+                if (dir != DIRECTION_BUTTON.NONE && CanMove(transform.position, dir)) {
                     // another direction is pressed, turn soon
-                    lastMoveDir = dir;
-                    var movementVector = GetMovementVector(dir, tiles);
-                    destPosition = transform.position + movementVector;
-                    StartMovingAnimation(movementVector);
+                    StartMove(dir);
                 } else {
                     StopMoving();
                 }
-            } else if (Vector3.Distance(transform.position, destPosition) <= delta && dir == lastMoveDir) {
+            } else if (Vector3.Distance(transform.position, destPosition) <= delta &&
+                       dir == lastMoveDir &&
+                       CanMove(destPosition, dir)) {
                 // destination is close enough, update destination
                 // in order to make it more smooth for long time key press
                 destPosition += GetMovementVector(dir, tiles);
@@ -116,17 +131,16 @@ public class MovementController : InputConsumer
                 return;
             changeDirCoolDown = 0;
 
-            var movementVector = GetMovementVector(dir, tiles);
             if (dir != lastMoveDir) {
                 // face to that dir first
                 lastMoveDir = dir;
+                var movementVector = GetMovementVector(dir, tiles);
                 FaceTo(movementVector);
 
                 // skip 8 frames before player can move
                 changeDirCoolDown = inputDelay;
-            } else {
-                destPosition = transform.position + movementVector;
-                StartMovingAnimation(movementVector);
+            } else if (CanMove(transform.position, dir)) {
+                StartMove(dir);
             }
         }
     }
@@ -196,13 +210,13 @@ public class MovementController : InputConsumer
     {
         // Debug.Log("Collision ENTER between " + this.name + " and " + col.gameObject.name);
 
-        lastCollidedObject = col.gameObject;
-        lastCollisionDir = lastMoveDir;
+        //lastCollidedObject = col.gameObject;
+        //lastCollisionDir = lastMoveDir;
 
-        StopMoving();
-        ClampCurrentPosition();
+        //StopMoving();
+        //ClampCurrentPosition();
 
-        PlayCollisionSound(lastCollidedObject);
+        //PlayCollisionSound(lastCollidedObject);
     }
 
     void OnCollisionStay2D(Collision2D col)

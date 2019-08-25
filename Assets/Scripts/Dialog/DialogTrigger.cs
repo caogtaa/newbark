@@ -21,7 +21,7 @@ public class DialogTrigger : Interactable
         dm.StartDialog(dialog);
     }
 
-    public override void OnFixedUpdateHandleInput() {
+    public override void OnUpdateHandleInput() {
         ACTION_BUTTON action = InputController.GetPressedActionButton();
 
         bool shouldEndDialog = false;

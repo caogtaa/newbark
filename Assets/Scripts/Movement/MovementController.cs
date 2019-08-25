@@ -32,20 +32,31 @@ public class MovementController : InputConsumer
         InputConsumerCenter.Instance.Register(this, 100);
     }
 
-    void FixedUpdate() {
+    private void FixedUpdate() {
+        // Best practise: update physics in FixedUpdate(), but handle input in Update()
+        if (IsMoving() && transform.position != destPosition) {
+            float delta = Time.fixedDeltaTime * speed;
+            transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
+        }
+    }
+
+    void Update() {
         if (InputConsumerCenter.Instance.GetCurrentConsumer() != this) {
-            // need auto move in some case
-            Move();
+            // only check auto move stop
+            if (transform.position == destPosition) {
+                StopMoving();
+            }
+
             return;
         }
 
-        // handle other logic in OnFixedUpdateHandleInput
+        // handle other logic in OnUpdateHandleInput
     }
 
-    public override void OnFixedUpdateHandleInput() {
+    public override void OnUpdateHandleInput() {
         DIRECTION_BUTTON dir = InputController.GetPressedDirectionButton();
         ACTION_BUTTON action = InputController.GetPressedActionButton();
-        Move(dir);
+        HandleMoveInput(dir);
 
         if (action != ACTION_BUTTON.NONE) {
             TryInteract(lastMoveDir, action);
@@ -76,11 +87,11 @@ public class MovementController : InputConsumer
         return Physics2D.Raycast(startingPosition, direction, raycastDistance);
     }
 
-    public void Move(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
+    public void HandleMoveInput(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
         if (IsMoving()) {
             // continue moving to destination, can not change direction in the middle
-            float delta = Time.fixedDeltaTime * speed;
-            transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
+            float delta = Time.deltaTime * speed;
+            // transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
             if (transform.position == destPosition) {
                 if (dir != DIRECTION_BUTTON.NONE) {
                     // another direction is pressed, turn soon

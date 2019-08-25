@@ -24,14 +24,14 @@ public class WarpController : InputConsumer
             movementController.FaceToDir(destination.postDropMove.direction);
     }
 
-    public override void OnFixedUpdateHandleInput() {
+    public override void OnUpdateHandleInput() {
         // do nothing to eat input
     }
 
     private void MoveToDropEnd(WarpZone destination)
     {
         if (destination.postDropMove.steps > 0)
-            movementController.Move(destination.postDropMove.direction, destination.postDropMove.steps);
+            movementController.HandleMoveInput(destination.postDropMove.direction, destination.postDropMove.steps);
     }
 
     private bool IsWarpZone(Collider2D other)

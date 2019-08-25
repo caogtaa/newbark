@@ -84,10 +84,10 @@ public class InputConsumerCenter : Singleton<InputConsumerCenter>
         return null;
     }
 
-    private void FixedUpdate() {
+    private void Update() {
         var target = GetCurrentConsumer();
         if (target) {
-            target.OnFixedUpdateHandleInput();
+            target.OnUpdateHandleInput();
         }
     }
 

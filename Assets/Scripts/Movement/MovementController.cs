@@ -19,6 +19,10 @@ public class MovementController : InputConsumer
     private int changeDirCoolDown = 0;
 
     private GameObject player;
+    private int LAYER_MASK_INTERACTABLE = 1 << 8;
+    private int LAYER_MASK_DEFAULT = 1 << 0;
+
+    private float lastPlayCollisionSoundTime = 0.0f;
 
     void Start()
     {
@@ -81,31 +85,36 @@ public class MovementController : InputConsumer
         }
     }
 
-    private RaycastHit2D CheckRaycast(Vector2 direction)
+    private RaycastHit2D CheckInteractableRaycast(Vector2 direction)
     {
         Vector2 startingPosition = (Vector2) transform.position;
 
-        return Physics2D.Raycast(startingPosition, direction, raycastDistance);
+        return Physics2D.Raycast(startingPosition, direction, raycastDistance, LAYER_MASK_INTERACTABLE);
     }
 
     private void StartMove(DIRECTION_BUTTON dir, int tiles = 1) {
         lastMoveDir = dir;
         var movementVector = GetMovementVector(dir, tiles);
 
-        if (CanMove(transform.position, dir)) {
+        bool canMove = CanMove(transform.position, dir, out Collider2D collidedObj);
+        if (canMove) { 
             destPosition = transform.position + movementVector;
             StartMovingAnimation(movementVector);
         } else {
             StartCollisionMovingAnimation(movementVector);
+            if (collidedObj) {
+                PlayCollisionSound(collidedObj.gameObject);
+            }
         }
     }
 
-    private bool CanMove(Vector3 startPos, DIRECTION_BUTTON dir) {
+    private bool CanMove(Vector3 startPos, DIRECTION_BUTTON dir, out Collider2D collidedObj) {
 
-        int mask = (1 << 0);   // only check default layer (all portals are in TransparentFX layer)
+        int mask = LAYER_MASK_DEFAULT;   // only check default layer (all portals are in TransparentFX layer)
         var dirVector = GetMovementVector(dir);
         var hit = Physics2D.Raycast(startPos, dirVector, raycastDistance, mask);
 
+        collidedObj = hit.collider;
         return hit.collider == null;
     }
 
@@ -122,7 +131,7 @@ public class MovementController : InputConsumer
                 }
             } else if (Vector3.Distance(transform.position, destPosition) <= delta &&
                        dir == lastMoveDir &&
-                       CanMove(destPosition, dir)) {
+                       CanMove(destPosition, dir, out Collider2D collidedObj)) {
                 // destination is close enough, update destination
                 // in order to make it more smooth for long time key press
                 destPosition += GetMovementVector(dir, tiles);
@@ -159,7 +168,7 @@ public class MovementController : InputConsumer
         if (dirVector == Vector3.zero)
             return false;
 
-        RaycastHit2D hit = CheckRaycast(dirVector);
+        RaycastHit2D hit = CheckInteractableRaycast(dirVector);
         // Debug.DrawRay(transform.position, dirVector, Color.green);
         if (hit.collider) {
             // Debug.DrawRay(transform.position, dirVector, Color.red);
@@ -263,10 +272,12 @@ public class MovementController : InputConsumer
     void PlayCollisionSound(GameObject gobj)
     {
         AudioSource audioSource = GetCollisionSound(gobj);
-
         if (audioSource is AudioSource && !audioSource.isPlaying)
         {
-            audioSource.Play();
+            if (Time.time - lastPlayCollisionSoundTime >= 1.0) {
+                audioSource.Play();
+                lastPlayCollisionSoundTime = Time.time;
+            }
         }
     }
 

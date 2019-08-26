@@ -199,6 +199,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Post (Route 29)
       objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -23714,6 +23719,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DialogItem (Shelf)
       objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
       propertyPath: m_IsTrigger
@@ -24108,6 +24118,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Post (New Bark)
       objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -24194,7 +24209,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 352196779}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.3506346, y: 21.027296, z: 12}
+  m_LocalPosition: {x: 2.070313, y: 2, z: 12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 490968613}
@@ -24406,6 +24421,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Post (Elm House)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
@@ -25460,6 +25480,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Post (Player House)
       objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -25544,6 +25569,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Post (Route 29 End)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
@@ -44034,6 +44064,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DialogItem (PC)
       objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
       propertyPath: m_IsTrigger
@@ -44155,6 +44190,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DialogItem (Bed)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
@@ -44662,6 +44702,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: DialogItem (TV)
       objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
       propertyPath: m_IsTrigger
@@ -44774,7 +44819,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7192301008348172418}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 8.5, y: 16.5, z: 2}
+  m_LocalPosition: {x: 0.5, y: -2.5, z: 2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -44840,6 +44885,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Post (Elm Lab)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5513471475047985742, guid: 03e4f12a8054c48a6b400f9829bd7af4,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1820661078736008589, guid: 03e4f12a8054c48a6b400f9829bd7af4,
         type: 3}
@@ -44925,6 +44975,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DialogItem (Radio)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
@@ -45043,6 +45098,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: DialogItem (Map)
+      objectReference: {fileID: 0}
+    - target: {fileID: 6894674271314320111, guid: 6873dcdc74e6440089eeaf021fa826a8,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6894674271314320104, guid: 6873dcdc74e6440089eeaf021fa826a8,
         type: 3}
@@ -45459,7 +45519,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2131464617}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 10.167188, y: 21, z: 12}
+  m_LocalPosition: {x: 2.070313, y: 2, z: 12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 556146649}

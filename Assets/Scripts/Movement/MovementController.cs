@@ -89,7 +89,8 @@ public class MovementController : InputConsumer
     {
         Vector2 startingPosition = (Vector2) transform.position;
 
-        return Physics2D.Raycast(startingPosition, direction, raycastDistance, LAYER_MASK_INTERACTABLE);
+        // todo: do not check DEFAULT layer, move posts to interactable
+        return Physics2D.Raycast(startingPosition, direction, raycastDistance, LAYER_MASK_INTERACTABLE | LAYER_MASK_DEFAULT);
     }
 
     private void StartMove(DIRECTION_BUTTON dir, int tiles = 1) {

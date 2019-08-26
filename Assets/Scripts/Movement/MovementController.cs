@@ -15,7 +15,7 @@ public class MovementController : InputConsumer
 
     public Vector3 destPosition;
     public DIRECTION_BUTTON lastMoveDir = DIRECTION_BUTTON.DOWN;    // hardcode init state
-    public bool mIsMoving = false;
+    public bool mIsMoving = false;                                  // whether the player animation is moving
     private int changeDirCoolDown = 0;
 
     private GameObject player;
@@ -27,6 +27,7 @@ public class MovementController : InputConsumer
             animator = GetComponentInChildren<Animator>();
         }
 
+        destPosition = transform.position;
         currentTilesToMove = tilesToMove;
 
         InputConsumerCenter.Instance.Register(this, 100);
@@ -90,8 +91,13 @@ public class MovementController : InputConsumer
     private void StartMove(DIRECTION_BUTTON dir, int tiles = 1) {
         lastMoveDir = dir;
         var movementVector = GetMovementVector(dir, tiles);
-        destPosition = transform.position + movementVector;
-        StartMovingAnimation(movementVector);
+
+        if (CanMove(transform.position, dir)) {
+            destPosition = transform.position + movementVector;
+            StartMovingAnimation(movementVector);
+        } else {
+            StartCollisionMovingAnimation(movementVector);
+        }
     }
 
     private bool CanMove(Vector3 startPos, DIRECTION_BUTTON dir) {
@@ -105,15 +111,14 @@ public class MovementController : InputConsumer
 
     public void HandleMoveInput(DIRECTION_BUTTON dir = DIRECTION_BUTTON.NONE, int tiles = 1) {
         if (IsMoving()) {
-            // continue moving to destination, can not change direction in the middle
+            // continue moving to destination
             float delta = Time.deltaTime * speed;
-            // transform.position = Vector3.MoveTowards(transform.position, destPosition, delta);
             if (transform.position == destPosition) {
-                if (dir != DIRECTION_BUTTON.NONE && CanMove(transform.position, dir)) {
+                if (dir == DIRECTION_BUTTON.NONE) {
+                    StopMoving();
+                } else {
                     // another direction is pressed, turn soon
                     StartMove(dir);
-                } else {
-                    StopMoving();
                 }
             } else if (Vector3.Distance(transform.position, destPosition) <= delta &&
                        dir == lastMoveDir &&
@@ -126,6 +131,7 @@ public class MovementController : InputConsumer
             return;
         }
 
+        // change facing and movement from idle state
         if (dir != DIRECTION_BUTTON.NONE) {
             if (--changeDirCoolDown > 0)
                 return;
@@ -139,7 +145,7 @@ public class MovementController : InputConsumer
 
                 // skip 8 frames before player can move
                 changeDirCoolDown = inputDelay;
-            } else if (CanMove(transform.position, dir)) {
+            } else {
                 StartMove(dir);
             }
         }
@@ -169,8 +175,21 @@ public class MovementController : InputConsumer
         return false;
     }
 
+    private void StartCollisionMovingAnimation(Vector3 movement) {
+        mIsMoving = true;
+
+        animator.speed = 0.5f;
+        animator.SetFloat("MoveX", movement.x);
+        animator.SetFloat("MoveY", movement.y);
+        animator.SetFloat("LastMoveX", movement.x);
+        animator.SetFloat("LastMoveY", movement.y);
+        animator.SetBool("Moving", true);
+    }
+
     private void StartMovingAnimation(Vector3 movement) {
         mIsMoving = true;
+
+        animator.speed = 1.0f;
         animator.SetFloat("MoveX", movement.x);
         animator.SetFloat("MoveY", movement.y);
         animator.SetFloat("LastMoveX", movement.x);
@@ -194,6 +213,8 @@ public class MovementController : InputConsumer
 
     private void FaceTo(Vector3 movement) {
         // mIsMoving = false;
+        animator.speed = 1.0f;
+
         animator.SetFloat("MoveX", movement.x);
         animator.SetFloat("MoveY", movement.y);
         animator.SetFloat("LastMoveX", movement.x);
